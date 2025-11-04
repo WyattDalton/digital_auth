@@ -14,6 +14,7 @@ function makeCookie(name: string, value: string, options: { path?: string; maxAg
 
 export async function GET(req: Request) {
     const clientId = process.env.DIGITAIL_CLIENT_ID;
+    const clientSecret = process.env.DIGITAIL_CLIENT_SECRET;
     const redirectUri = process.env.DIGITAIL_REDIRECT_URI; // must match registered
     if (!clientId || !redirectUri) {
         return new Response(JSON.stringify({ error: 'Missing DIGITAIL_CLIENT_ID or DIGITAIL_REDIRECT_URI' }), { status: 500 });
@@ -27,14 +28,14 @@ export async function GET(req: Request) {
     const cookieVerifier = makeCookie('pkce_code_verifier', code_verifier, { maxAge: 600 });
     const cookieState = makeCookie('oauth_state', state, { maxAge: 600 });
 
-    const params = new URLSearchParams({
-        response_type: 'code',
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        state,
-        code_challenge: code_challenge,
-        code_challenge_method: 'S256'
-    });
+    const params = new URLSearchParams();
+    params.set('response_type', 'code');
+    params.set('client_id', clientId);
+    if (clientSecret) params.set('client_secret', clientSecret);
+    params.set('redirect_uri', redirectUri);
+    params.set('state', state);
+    params.set('code_challenge', code_challenge);
+    params.set('code_challenge_method', 'S256');
 
     const authUrl = `https://vet.digitail.io/oauth/authorize?${params.toString()}`;
 
