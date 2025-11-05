@@ -37,7 +37,7 @@ export async function GET(req: Request) {
     params.set('code_challenge', code_challenge);
     params.set('code_challenge_method', 'S256');
 
-    const authUrl = `https://vet.digitail.io/oauth/authorize?${params.toString()}`;
+    const authUrl = `https://developer.digitail.io/oauth/authorize?${params.toString()}`;
 
     return new Response(null, {
         status: 307,
